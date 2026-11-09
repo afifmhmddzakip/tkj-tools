@@ -59,6 +59,7 @@ exit 0
 E
 chmod +x "$STUB"/*
 PATH="$STUB:$PATH"
+export TKJ_UI=whiptail
 
 # menu bertingkat: main "1"(DNS) -> service "back" -> main "0"(keluar)
 printf '%s\n' "1" "back" "0" >"$TKJ_MENUS"

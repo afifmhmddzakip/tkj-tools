@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # ui.sh — wrapper whiptail + fallback teks (FR-COM-18)
-command -v whiptail >/dev/null 2>&1 && [[ -t 1 ]] && UI=whiptail || UI=text
+if [[ -n ${TKJ_UI:-} ]]; then UI="$TKJ_UI"
+elif command -v whiptail >/dev/null 2>&1 && [[ -t 1 ]]; then UI=whiptail
+else UI=text; fi
 
 ui_msg() {
   local msg="$1"

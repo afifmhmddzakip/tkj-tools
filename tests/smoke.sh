@@ -86,6 +86,7 @@ exit 0
 E
 chmod +x "$STUB"/*
 PATH="$STUB:$PATH"
+export TKJ_UI=whiptail
 
 source ./lib/core.sh
 for m in dns ftp dhcp web ssh diag; do source "./lib/modules/$m.sh"; done
