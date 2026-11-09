@@ -19,9 +19,8 @@ ui_yesno() {
 ui_input() {
   local prompt="$1" def="${2:-}"
   if [[ $UI == whiptail ]]; then
-    whiptail --inputbox "$prompt" 10 60 "$def" 2>/tmp/tkj-in
-    local rc=$?; [[ $rc -ne 0 ]] && return "$rc"
-    cat /tmp/tkj-in; rm -f /tmp/tkj-in
+    local v; v=$(whiptail --inputbox "$prompt" 10 60 "$def" 2>/dev/null) || return $?
+    echo "$v"
   else
     local v; read -rp "$prompt: " v; echo "${v:-$def}"
   fi
@@ -33,9 +32,8 @@ ui_menu() {
   local tags=() descs=()
   while (($#>0)); do tags+=("$1"); descs+=("$2"); shift 2; done
   if [[ $UI == whiptail ]]; then
-    whiptail --title "$title" --menu "$title" 18 72 12 "$@" 2>/tmp/tkj-menu
-    local rc=$?; [[ $rc -ne 0 ]] && return "$rc"
-    local sel; sel=$(</tmp/tkj-menu); rm -f /tmp/tkj-menu
+    local sel
+    sel=$(whiptail --title "$title" --menu "$title" 18 72 12 "$@" 2>/dev/null) || return $?
     echo "$sel"; return 0
   else
     echo "$title"

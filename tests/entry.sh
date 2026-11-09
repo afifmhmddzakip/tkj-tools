@@ -47,13 +47,13 @@ if [[ "$*" == *--inputbox* ]]; then
 fi
 if [[ "$*" == *--yesno* || "$*" == *--msgbox* || "$*" == *--textbox* || "$*" == *--scrolltext* ]]; then exit 0; fi
 if [[ "$*" == *--menu* ]]; then
-  # ui_menu baca dari stderr (2>/tmp/tkj-menu)
+  # ui_menu baca dari stdout (> file sementara)
   if [[ -s "$TKJ_MENUS" ]]; then
     IFS= read -r line <"$TKJ_MENUS"
     sed -i '1d' "$TKJ_MENUS"
-    echo "$line" >&2; exit 0
+    echo "$line"; exit 0
   fi
-  echo "${TKJ_MENU:-0}" >&2; exit 0
+  echo "${TKJ_MENU:-0}"; exit 0
 fi
 exit 0
 E
