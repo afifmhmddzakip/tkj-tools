@@ -38,7 +38,9 @@ ui_menu() {
     sel=$(whiptail --title "$title" --menu "$title" 18 72 12 "$@" 2>/dev/null) || return $?
     echo "$sel"; return 0
   else
-    # title + item ke stderr (tampil di terminal); HANYA pilihan ke stdout utk $(...)
+    # clear utk cegah menu menumpuk antar putaran; title+item ke stderr,
+    # HANYA pilihan ke stdout utk $(...)
+    clear
     echo "$title" >&2
     local i
     for i in "${!tags[@]}"; do echo "  $((i+1))) ${descs[$i]}" >&2; done
