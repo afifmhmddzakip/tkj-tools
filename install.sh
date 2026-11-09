@@ -27,6 +27,7 @@ chmod -R a+rX "$DEST"
 chmod +x "$DEST/bin/tkj-tools"
 
 mkdir -p "$BIN"
+rm -f "$BIN/tkj-tools"   # hapus file lama (hasil install -m) bila ada
 ln -sf "$DEST/bin/tkj-tools" "$BIN/tkj-tools"
 
 echo "Selesai. Jalankan: tkj-tools"
