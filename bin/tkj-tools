@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# tkj-tools — entry point
+source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/core.sh"
+
+require_root
+
+for m in dns ftp dhcp web ssh diag; do source "$TKJ_ROOT/lib/modules/$m.sh"; done
+
+declare -A SVC=(
+  [dns]=named [ftp]=vsftpd [dhcp]=isc-dhcp-server [web]=apache2 [ssh]=ssh
+)
+svc_name() { local n="${SVC[$1]}"; [[ $1 == ssh && $(svc_active ssh.socket) ]] && n=ssh.socket; echo "$n"; }
+
+service_menu() {
+  local m="$1" name="$2"
+  while :; do
+    local sel
+    sel=$(ui_menu "$name ($(${m}_status))" \
+      status  "Status & Informasi" \
+      configure "Konfigurasi (wizard)" \
+      validate "Validasi konfigurasi" \
+      restart "Start / Stop / Restart" \
+      test    "Uji fungsi" \
+      logs    "Lihat Log" \
+      backup  "Backup / Restore" \
+      uninstall "Uninstall" \
+      back  "Kembali") || return 8
+    case "$sel" in
+      status) ui_msg "Status ${m}_status: $(${m}_status)";;
+      configure) ${m}_configure;;
+      validate) ${m}_validate && ui_msg "Validasi OK." || ui_error "Validasi GAGAL.";;
+      restart)
+        if ui_yesno "Restart layanan $name?"; then
+          svc_restart "$(svc_name "$m")" && ui_msg "Restart OK." || ui_error "Gagal restart."
+        fi;;
+      test) ${m}_test;;
+      logs) ${m}_logs | ui_msg "Log $name";;
+      backup) backup_backup_menu "$m";;
+      uninstall) ${m}_uninstall;;
+      back) return 0;;
+    esac
+  done
+}
+
+backup_backup_menu() {
+  local m="$1" dir
+  case "$m" in
+    dns) backup_create "$BIND_CONF";;
+    ftp) backup_create "$FTP_CONF";;
+    dhcp) backup_create "$DHCP_CONF";;
+    web) backup_create "$WEB_SITES"/*.conf;;
+    ssh) backup_create "$SSH_CONF";;
+  esac
+  ui_msg "Backup dibuat: $(ls -1dt "$TKJ_BACKUPS"/*/ | head -1)"
+}
+
+main_menu() {
+  while :; do
+    local sel
+    sel=$(ui_menu "tkj-tools v$TKJ_VERSION · Debian 13 · root" \
+      1 "DNS Server (BIND9) — $(dns_status)" \
+      2 "FTP Server (VSFTPD) — $(ftp_status)" \
+      3 "DHCP Server (ISC DHCP) — $(dhcp_status)" \
+      4 "Web Server (Apache2) — $(web_status)" \
+      5 "SSH Server (OpenSSH) — $(ssh_status)" \
+      6 "Diagnostik Sistem" \
+      7 "Log & Backup" \
+      0 "Keluar") || return 0
+    case "$sel" in
+      1) service_menu dns "DNS Server";;
+      2) service_menu ftp "FTP Server";;
+      3) service_menu dhcp "DHCP Server";;
+      4) service_menu web "Web Server";;
+      5) service_menu ssh "SSH Server";;
+      6)
+        local out; out=$(diag_show)
+        if [[ $UI == whiptail ]]; then echo "$out" >/tmp/tkj-diag; whiptail --scrolltext --textbox /tmp/tkj-diag 20 76; rm -f /tmp/tkj-diag; else echo "$out"; fi;;
+      7)
+        sel=$(ui_menu "Log & Backup" backup "Backup manual" list "Daftar backup" log "Lihat log tool" back "Kembali") || continue
+        case "$sel" in
+          backup)
+            m=$(ui_menu "Pilih layanan" dns "DNS" ftp "FTP" dhcp "DHCP" web "Web" ssh "SSH") || continue
+            backup_backup_menu "$m";;
+          list) ui_msg "$(backup_list)";;
+          log) ui_msg "$(tail -50 "$TKJ_LOG" | sed 's/^/  /')";;
+        esac;;
+      0) return 0;;
+    esac
+  done
+}
+
+main_menu
+exit 0
