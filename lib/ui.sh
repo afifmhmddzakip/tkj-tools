@@ -40,7 +40,7 @@ ui_menu() {
   else
     # clear utk cegah menu menumpuk antar putaran; title+item ke stderr,
     # HANYA pilihan ke stdout utk $(...)
-    clear
+    printf '\033c' >&2   # reset terminal penuh (stderr = terminal; stdout ditelan $() )
     echo "$title" >&2
     local i
     for i in "${!tags[@]}"; do echo "  $((i+1))) ${descs[$i]}" >&2; done
