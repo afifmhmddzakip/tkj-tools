@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # tkj-tools — entry point
-source "$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/lib/core.sh"
+SELF=$(readlink -f -- "${BASH_SOURCE[0]}")
+source "$(cd "$(dirname "$SELF")/.." && pwd)/lib/core.sh"
 
 require_root
 

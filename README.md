@@ -1,57 +1,10 @@
 # tkj-tools
 
-Tool manajemen server Debian 13 (terminal interaktif via whiptail). Mengelola layanan:
+Toolkit administrasi server TKJ berbasis terminal (Debian 13). Platform TUI untuk mengelola konfigurasi 5 layanan: DNS (BIND9), FTP (VSFTPD), DHCP (ISC DHCP), Web (Apache2), SSH (OpenSSH).
 
-| Modul | Layanan | File konfigurasi |
-|-------|---------|------------------|
-| DNS | BIND9 | `/etc/bind/named.conf.local` |
-| FTP | vsftpd | `/etc/vsftpd.conf` |
-| DHCP | ISC DHCP | `/etc/dhcp/dhcpd.conf` |
-| Web | Apache2 | `/etc/apache2/sites-available` |
-| SSH | OpenSSH | `/etc/ssh/sshd_config.d/99-tkj-tools.conf` |
+Instalasi paket dilakukan manual via `apt`; tool hanya mendeteksi & memandu.
 
 ## Persyaratan
-<<<<<<< HEAD
-
-- Debian 13 (Trixie) atau sejenis (Ubuntu 24.04+)
-- Root (`sudo`)
-- `whiptail` (default); bila tidak ada, tool fallback ke mode teks
-- `git`, `bash`
-
-```sh
-sudo apt update
-sudo apt install -y git whiptail
-```
-
-## Pasang
-
-Clone dan jalankan langsung:
-
-```sh
-git clone https://github.com/afifmhmddzakip/tkj-tools.git
-cd tkj-tools
-sudo bash bin/tkj-tools
-```
-
-Untuk memanggil dari mana saja (opsional):
-
-```sh
-sudo install -m 0755 bin/tkj-tools /usr/local/bin/tkj-tools
-tkj-tools
-```
-
-## Pemakaian
-
-Menu utama: 1 DNS · 2 FTP · 3 DHCP · 4 Web · 5 SSH · 6 Diagnostik · 7 Log & Backup · 0 Keluar.
-
-Tiap modul mendukung: `status`, `configure` (wizard), `validate`, `restart`, `test`, `logs`, `backup`, `uninstall`.
-
-Uji otomatis (stub, non-root):
-
-```sh
-bash tests/smoke.sh
-bash tests/entry.sh
-=======
 
 - Debian 13 (Trixie) atau sejenis (Ubuntu 24.04+)
 - Root (`sudo`)
@@ -61,7 +14,6 @@ bash tests/entry.sh
 ```bash
 sudo apt update
 sudo apt install -y git whiptail
->>>>>>> a87e189 (docs: README tutorial install + pemakaian)
 ```
 
 ## Instalasi
@@ -74,12 +26,20 @@ cd tkj-tools
 sudo bash bin/tkj-tools
 ```
 
-Untuk memanggil dari mana saja (opsional, pasang sebagai perintah sistem):
+Untuk memanggil dari mana saja, pasang via `install.sh` (menyalin ke `/opt/tkj-tools` + symlink `/usr/local/bin/tkj-tools`):
 
 ```bash
-sudo install -m 0755 bin/tkj-tools /usr/local/bin/tkj-tools
+sudo ./install.sh
 tkj-tools
 ```
+
+## Uninstall
+
+```bash
+sudo ./uninstall.sh
+```
+
+Menghapus `/opt/tkj-tools` dan `/usr/local/bin/tkj-tools`.
 
 ## Pemakaian
 
@@ -99,24 +59,22 @@ Backup ditaruh di `/var/backups/tkj-tools/` (timestamp).
 
 ## Struktur
 
-```
-bin/tkj-tools        # entry point + menu
-lib/core.sh           # inisialisasi, backup, logging, utils
-lib/ui.sh             # wrapper whiptail + fallback teks
-lib/modules/*.sh      # dns, ftp, dhcp, web, ssh
-tests/smoke.sh        # uji wizard (stub, non-root)
-tests/entry.sh        # uji navigasi menu
-```
+- `bin/tkj-tools` — entry point
+- `lib/core.sh, ui.sh, pkg.sh, service.sh, backup.sh, validate.sh, net.sh` — fondasi
+- `lib/modules/{dns,ftp,dhcp,web,ssh,diag}.sh` — modul layanan
+- `install.sh` / `uninstall.sh` — pasang / hapus
 
-## Test
+## Lokasi data
 
-```bash
+- Konfigurasi: `/etc/tkj-tools/`
+- State: `/var/lib/tkj-tools/state/`
+- Backup: `/var/backups/tkj-tools/`
+- Log: `/var/log/tkj-tools/tkj-tools.log`
+
+## Uji
+
+```sh
 bash tests/smoke.sh
 bash tests/entry.sh
+bash -n bin/tkj-tools lib/*.sh lib/modules/*.sh tests/*.sh
 ```
-
-## Keamanan
-
-- SSH: mengubah port / mematikan password memicu **rollback otomatis 60 detik** jika sesi tidak dikonfirmasi.
-- Setiap perubahan konfigurasi di-backup sebelum diterapkan.
-- Jalankan hanya sebagai root (tool menolak non-root).
