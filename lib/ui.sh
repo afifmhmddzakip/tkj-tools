@@ -38,9 +38,10 @@ ui_menu() {
     sel=$(whiptail --title "$title" --menu "$title" 18 72 12 "$@" 2>/dev/null) || return $?
     echo "$sel"; return 0
   else
-    echo "$title"
+    # title + item ke stderr (tampil di terminal); HANYA pilihan ke stdout utk $(...)
+    echo "$title" >&2
     local i
-    for i in "${!tags[@]}"; do echo "  $((i+1))) ${descs[$i]}"; done
+    for i in "${!tags[@]}"; do echo "  $((i+1))) ${descs[$i]}" >&2; done
     local n; read -rp "Pilih: " n
     [[ "$n" =~ ^[0-9]+$ && $n -ge 1 && $n -le ${#tags[@]} ]] || return 8
     echo "${tags[$((n-1))]}"; return 0
