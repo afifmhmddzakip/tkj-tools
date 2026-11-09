@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # ui.sh — wrapper whiptail + fallback teks (FR-COM-18)
-if [[ -n ${TKJ_UI:-} ]]; then UI="$TKJ_UI"
-elif command -v whiptail >/dev/null 2>&1 && [[ -t 1 ]]; then UI=whiptail
-else UI=text; fi
+# Default UI=text. Whiptail HANYA bila dieksplisitkan (TKJ_UI=whiptail):
+# whiptail menggambar ke stdout, sehingga tak bisa dipakai dalam $(...) — teks selalu aman.
+UI="${TKJ_UI:-text}"
 
 ui_msg() {
   local msg="$1"

@@ -8,7 +8,7 @@ Instalasi paket dilakukan manual via `apt`; tool hanya mendeteksi & memandu.
 
 - Debian 13 (Trixie) atau sejenis (Ubuntu 24.04+)
 - Root (`sudo`)
-- `whiptail` (default tersedia). Bila tidak ada, tool otomatis fallback ke mode teks.
+- `whiptail` (opsional). Default mode teks; set `TKJ_UI=whiptail` utk pakai whiptail.
 - `git`, `bash`
 
 ```bash
