@@ -95,9 +95,7 @@ dns_test() {
 }
 dns_logs() { [[ -f /var/log/syslog ]] && tail -50 /var/log/syslog | grep -i named || tail -50 /var/log/daemon.log 2>/dev/null | grep -i named; }
 dns_uninstall() {
-  ui_yesno "Backup dan hapus zona buatan tool? (paket bind9 TIDAK dihapus)" || return 8
+  ui_yesno "Hapus bind9 (apt purge)? Config ikut terhapus." || return 8
   backup_create "$BIND_CONF" "$BIND_DIR/db."* 2>/dev/null
-  sed -i '/dikelola oleh tkj-tools/d' "$BIND_CONF" 2>/dev/null
-  grep -l 'dikelola oleh tkj-tools' "$BIND_DIR"/db.* 2>/dev/null | xargs -r rm -f
-  echo >/dev/null
+  ui_spin "apt-get purge bind9…" apt-get purge -y $DNS_PKGS
 }

@@ -59,11 +59,7 @@ web_test() {
 }
 web_logs() { tail -50 /var/log/apache2/*error.log 2>/dev/null; }
 web_uninstall() {
-  ui_yesno "Hapus virtual host & document root? (apache2 dipertahankan)" || return 8
-  a2dissite "$domain" >/dev/null 2>&1
-  backup_create "$WEB_SITES/$domain.conf"
-  rm -f "$WEB_SITES/$domain.conf" "$WEB_EN/$domain.conf"
-  [[ -n "$root" && -d "$root" ]] && rm -rf "$root"
-  svc_restart apache2 2>/dev/null
-  ui_msg "Virtual host dihapus."
+  ui_yesno "Hapus apache2 (apt purge)? Config ikut terhapus." || return 8
+  backup_create "$WEB_SITES"/*.conf 2>/dev/null
+  ui_spin "apt-get purge apache2…" apt-get purge -y apache2
 }

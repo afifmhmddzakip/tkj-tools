@@ -51,8 +51,7 @@ ftp_test() {
 }
 ftp_logs() { if [[ -f /var/log/vsftpd.log ]]; then tail -50 /var/log/vsftpd.log; else tail -50 /var/log/syslog | grep -i vsftpd; fi; }
 ftp_uninstall() {
-  ui_yesno "Hapus konfigurasi vsftpd? (user & paket dipertahankan)" || return 8
+  ui_yesno "Hapus vsftpd (apt purge)? Config ikut terhapus." || return 8
   backup_create "$FTP_CONF"
-  rm -f "$FTP_CONF"
-  ui_msg "File konfigurasi dihapus. Paket vsftpd tetap ada."
+  ui_spin "apt-get purge vsftpd…" apt-get purge -y vsftpd
 }

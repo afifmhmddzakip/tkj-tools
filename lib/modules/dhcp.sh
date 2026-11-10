@@ -79,9 +79,7 @@ _tcp_test() {
 }
 dhcp_logs() { tail -50 /var/log/syslog | grep -i dhcpd; }
 dhcp_uninstall() {
-  ui_yesno "Hapus konfigurasi DHCP? (paket dipertahankan)" || return 8
+  ui_yesno "Hapus isc-dhcp-server (apt purge)? Config ikut terhapus." || return 8
   backup_create "$DHCP_CONF"
-  rm -f "$DHCP_CONF"
-  [[ -f "$DHCP_DEFAULT" ]] && echo "INTERFACESv4=\"\"" >"$TKJ_STATE/stage/default" && atomic_write "$DHCP_DEFAULT" <"$TKJ_STATE/stage/default"
-  ui_msg "Konfigurasi DHCP dihapus."
+  ui_spin "apt-get purge isc-dhcp-server…" apt-get purge -y isc-dhcp-server
 }

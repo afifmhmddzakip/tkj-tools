@@ -73,9 +73,7 @@ ssh_test() {
 }
 ssh_logs() { tail -50 /var/log/auth.log | grep -i sshd; }
 ssh_uninstall() {
-  ui_yesno "Hapus konfigurasi SSH buatan tool? (paket dipertahankan)" || return 8
+  ui_yesno "Hapus openssh-server (apt purge)? Config ikut terhapus." || return 8
   backup_create "$SSH_CONF"
-  rm -f "$SSH_CONF"
-  svc_restart ssh 2>/dev/null
-  ui_msg "Konfigurasi SSH dihapus (kembali ke default)."
+  ui_spin "apt-get purge openssh-server…" apt-get purge -y openssh-server
 }
