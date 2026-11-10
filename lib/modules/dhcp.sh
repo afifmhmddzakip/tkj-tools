@@ -11,7 +11,9 @@ dhcp_status() {
 
 dhcp_install() {
   pkg_installed isc-dhcp-server && { ui_msg "ISC DHCP sudah terpasang."; return; }
-  ui_msg "Pasang manual: sudo apt update && sudo apt install isc-dhcp-server"
+  ui_yesno "Pasang isc-dhcp-server via apt?" || return 8
+  ui_spin "apt-get update…" apt-get update -qq || return 1
+  ui_spin "apt-get install isc-dhcp-server…" apt-get install -y isc-dhcp-server
 }
 
 dhcp_configure() {

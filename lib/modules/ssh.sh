@@ -10,7 +10,9 @@ ssh_status() {
 
 ssh_install() {
   pkg_installed openssh-server && { ui_msg "openssh-server sudah terpasang."; return; }
-  ui_msg "Pasang manual: sudo apt update && sudo apt install openssh-server"
+  ui_yesno "Pasang openssh-server via apt?" || return 8
+  ui_spin "apt-get update…" apt-get update -qq || return 1
+  ui_spin "apt-get install openssh-server…" apt-get install -y openssh-server
 }
 
 ssh_configure() {

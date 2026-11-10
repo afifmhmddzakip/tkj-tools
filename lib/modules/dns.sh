@@ -11,10 +11,11 @@ dns_status() {
 }
 
 dns_install() {
-  missing=$(pkg_missing $DNS_PKGS)
+  local missing; missing=$(pkg_missing $DNS_PKGS)
   [[ -z "$missing" ]] && { ui_msg "Paket BIND9 sudah terpasang."; return; }
-  ui_msg "Paket yang dibutuhkan belum ada: $missing"
-  ui_msg "Pasang manual: sudo apt update && sudo apt install $DNS_PKGS"
+  ui_yesno "Pasang $missing via apt?" || return 8
+  ui_spin "apt-get update…" apt-get update -qq || return 1
+  ui_spin "apt-get install…" apt-get install -y $missing
 }
 
 dns_configure() {

@@ -17,10 +17,11 @@ service_menu() {
   while :; do
     local sel
     sel=$(ui_menu "$name ($(${m}_status))" \
-      status  "Status & Informasi" \
+      status   "Status & Informasi" \
+      install  "Install package (apt)" \
       configure "Konfigurasi (wizard)" \
       validate "Validasi konfigurasi" \
-      restart "Start / Stop / Restart" \
+      restart  "Start / Stop / Restart" \
       test    "Uji fungsi" \
       logs    "Lihat Log" \
       backup  "Backup / Restore" \
@@ -28,6 +29,7 @@ service_menu() {
       back  "Kembali") || return 8
     case "$sel" in
       status) ui_msg "Status ${m}_status: $(${m}_status)";;
+      install) ${m}_install;;
       configure) ${m}_configure;;
       validate) ${m}_validate && ui_msg "Validasi OK." || ui_error "Validasi GAGAL.";;
       restart)

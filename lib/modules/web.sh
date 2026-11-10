@@ -11,7 +11,9 @@ web_status() {
 
 web_install() {
   pkg_installed apache2 && { ui_msg "apache2 sudah terpasang."; return; }
-  ui_msg "Pasang manual: sudo apt update && sudo apt install apache2"
+  ui_yesno "Pasang apache2 via apt?" || return 8
+  ui_spin "apt-get update…" apt-get update -qq || return 1
+  ui_spin "apt-get install apache2…" apt-get install -y apache2
 }
 
 web_configure() {

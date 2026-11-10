@@ -10,7 +10,9 @@ ftp_status() {
 
 ftp_install() {
   pkg_installed vsftpd && { ui_msg "vsftpd sudah terpasang."; return; }
-  ui_msg "Pasang manual: sudo apt update && sudo apt install vsftpd"
+  ui_yesno "Pasang vsftpd via apt?" || return 8
+  ui_spin "apt-get update…" apt-get update -qq || return 1
+  ui_spin "apt-get install vsftpd…" apt-get install -y vsftpd
 }
 
 ftp_configure() {
